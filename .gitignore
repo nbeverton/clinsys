@@ -18,6 +18,8 @@ target/
 *.iws
 *.iml
 *.ipr
+out/
+*.idea/
 
 ### NetBeans ###
 /nbproject/private/
@@ -31,3 +33,19 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Maven
+.mvn/
+dependency-reduced-pom.xml
+build.log
+
+# Spring Boot logs
+spring.log
+
+# Java
+*.class
+*.log
