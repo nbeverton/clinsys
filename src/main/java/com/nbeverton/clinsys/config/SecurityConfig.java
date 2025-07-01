@@ -12,13 +12,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
-                .csrf(csrf -> csrf.disable()) // Desativa CSRF só para facilitar testes
+                .csrf(csrf -> csrf.disable()) // Desativa CSRF para testes
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/patients").permitAll() // libera o POST
                         .requestMatchers(HttpMethod.GET, "/patients/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/patients").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/patients/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/patients/**").permitAll()
                         .anyRequest().authenticated()
                 );
-                 // Ativa o Basic Auth .httpBasic();
 
         return http.build();
     }
