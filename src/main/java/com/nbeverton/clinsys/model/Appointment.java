@@ -20,7 +20,8 @@ public class Appointment {
     private String date;
     private String time;
     private String description;
-    private String status;
+    private String status; // Cancelado, agendado, concluido
+    private boolean paid; // Flag de pagamento
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
@@ -29,5 +30,7 @@ public class Appointment {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+
 
 }
