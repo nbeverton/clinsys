@@ -15,19 +15,27 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Desativa CSRF para testes
                 .authorizeHttpRequests(auth -> auth
                         // Permissões para /patients
-                        .requestMatchers(HttpMethod.GET, "/patients/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/patients").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/patients/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/patients/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/patients/**").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/patients").permitAll()
+//                        .requestMatchers(HttpMethod.PUT, "/patients/**").permitAll()
+//                        .requestMatchers(HttpMethod.DELETE, "/patients/**").permitAll()
+//
+//                        // Permissões para /users
+//                        .requestMatchers(HttpMethod.GET, "/users/**").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
+//                        .requestMatchers(HttpMethod.PUT, "/users/**").permitAll()
+//                        .requestMatchers(HttpMethod.DELETE, "/users/**").permitAll()
+//
+//                        // Permissões para /appointments
+//                        .requestMatchers(HttpMethod.GET, "/appointments/**").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/appointments").permitAll()
+//                        .requestMatchers(HttpMethod.PUT, "/appointments/**").permitAll()
+//                        .requestMatchers(HttpMethod.DELETE, "/appointments/**").permitAll()
+//
+//                        // Qualquer outro endpoint precisa de autenticação
+//                        .anyRequest().authenticated()
 
-                        // Permissões para /users
-                        .requestMatchers(HttpMethod.GET, "/users/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/users/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/users/**").permitAll()
-
-                        // Qualquer outro endpoint precisa de autenticação
-                        .anyRequest().authenticated()
+                        .requestMatchers("/**").permitAll()
                 );
 
         return http.build();
