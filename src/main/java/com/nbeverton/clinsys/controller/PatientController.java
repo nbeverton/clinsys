@@ -1,7 +1,10 @@
 package com.nbeverton.clinsys.controller;
 
+import com.nbeverton.clinsys.dto.PatientDTO;
+import com.nbeverton.clinsys.dto.PatientResponseDTO;
 import com.nbeverton.clinsys.model.Patient;
 import com.nbeverton.clinsys.service.PatientService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,23 +19,23 @@ public class PatientController {
     private PatientService service;
 
     @PostMapping
-    public ResponseEntity<Patient> create(@RequestBody Patient patient) {
-        return ResponseEntity.ok(service.createPatient(patient));
+    public ResponseEntity<PatientResponseDTO> create(@Valid @RequestBody PatientDTO dto) {
+        return ResponseEntity.ok(service.createPatient(dto));
     }
 
     @GetMapping
-    public ResponseEntity<List<Patient>> getAll() {
+    public ResponseEntity<List<PatientResponseDTO>> getAll() {
         return ResponseEntity.ok(service.getAllPatients());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Patient> getById(@PathVariable Long id) {
+    public ResponseEntity<PatientResponseDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.getPatientById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Patient> update(@PathVariable Long id, @RequestBody Patient updatedPatient) {
-        return ResponseEntity.ok(service.updatePatient(id, updatedPatient));
+    public ResponseEntity<PatientResponseDTO> update(@PathVariable Long id, @Valid @RequestBody PatientDTO dto) {
+        return ResponseEntity.ok(service.updatePatient(id, dto));
     }
 
     @DeleteMapping("/{id}")
