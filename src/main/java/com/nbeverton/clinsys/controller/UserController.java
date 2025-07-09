@@ -1,7 +1,9 @@
 package com.nbeverton.clinsys.controller;
 
-import com.nbeverton.clinsys.model.User;
+import com.nbeverton.clinsys.dto.UserDTO;
+import com.nbeverton.clinsys.dto.UserResponseDTO;
 import com.nbeverton.clinsys.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,23 +18,23 @@ public class UserController {
     private UserService service;
 
     @PostMapping
-    public ResponseEntity<User> create(@RequestBody User user) {
-        return ResponseEntity.ok(service.createUser(user));
+    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserDTO dto) {
+        return ResponseEntity.ok(service.createUser(dto));
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAll() {
+    public ResponseEntity<List<UserResponseDTO>> getAll() {
         return ResponseEntity.ok(service.getAllUsers());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getById(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.getUserById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User updatedUser) {
-        return ResponseEntity.ok(service.updateUser(id, updatedUser));
+    public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @Valid @RequestBody UserDTO dto) {
+        return ResponseEntity.ok(service.updateUser(id, dto));
     }
 
     @DeleteMapping("/{id}")
