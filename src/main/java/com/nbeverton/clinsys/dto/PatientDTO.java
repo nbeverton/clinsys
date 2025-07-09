@@ -9,12 +9,17 @@ public class PatientDTO {
 
     @NotBlank(message = "O nome é obrigatório!")
     private String name;
+
+    @NotBlank(message = "O e-mail é obrigatório.")
     @Email(message = "E-mail inválido!")
     private String email;
+
     @NotBlank(message = "O telefone é obrigatório!")
     private String phone;
+
     @NotBlank(message = "A data de nascimento é obrigatória!")
     private String birthDate;
+
     @NotBlank(message = "O gênero é obrigatório!")
     private String gender;
 

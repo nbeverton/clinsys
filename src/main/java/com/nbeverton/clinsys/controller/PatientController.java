@@ -2,7 +2,6 @@ package com.nbeverton.clinsys.controller;
 
 import com.nbeverton.clinsys.dto.PatientDTO;
 import com.nbeverton.clinsys.dto.PatientResponseDTO;
-import com.nbeverton.clinsys.model.Patient;
 import com.nbeverton.clinsys.service.PatientService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,7 @@ public class PatientController {
     private PatientService service;
 
     @PostMapping
-    public ResponseEntity<PatientResponseDTO> create(@Valid @RequestBody PatientDTO dto) {
+    public ResponseEntity<PatientResponseDTO> create(@RequestBody @Valid PatientDTO dto) {
         return ResponseEntity.ok(service.createPatient(dto));
     }
 
