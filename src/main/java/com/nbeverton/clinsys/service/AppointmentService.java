@@ -1,15 +1,16 @@
 package com.nbeverton.clinsys.service;
 
-import com.nbeverton.clinsys.model.Appointment;
+import com.nbeverton.clinsys.dto.AppointmentDTO;
+import com.nbeverton.clinsys.dto.AppointmentResponseDTO;
 
 import java.util.List;
 
 public interface AppointmentService {
 
-    Appointment createAppointment(Appointment appointment);
-    Appointment getAppointmentById(Long id);
-    List<Appointment> getAllAppointments();
-    Appointment updateAppointment(Long id, Appointment updatedAppointment);
+    AppointmentResponseDTO createAppointment(AppointmentDTO dto);
+    AppointmentResponseDTO getAppointmentById(Long id);
+    List<AppointmentResponseDTO> getAllAppointments();
+    AppointmentResponseDTO updateAppointment(Long id, AppointmentDTO dto);
     void deleteAppointment(Long id);
 
 }
