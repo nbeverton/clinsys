@@ -1,43 +1,51 @@
 package com.nbeverton.clinsys.config;
 
+import com.nbeverton.clinsys.security.JWTAuthenticationFilter;
+import com.nbeverton.clinsys.service.impl.UserDetailsServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
+    private final JWTAuthenticationFilter jwtAuthFilter;
+    private final UserDetailsServiceImpl userDetailsService;
+
+    // Define o encoder para a senha:
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http
-                .csrf(csrf -> csrf.disable()) // Desativa CSRF para testes
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+
+    // Define o gerenciador de autentificação:
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+        return config.getAuthenticationManager();
+    }
+
+    // Define a cadeia de filtros e regras de segurança:
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+        return http
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Permissões para /patients
-//                        .requestMatchers(HttpMethod.GET, "/patients/**").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/patients").permitAll()
-//                        .requestMatchers(HttpMethod.PUT, "/patients/**").permitAll()
-//                        .requestMatchers(HttpMethod.DELETE, "/patients/**").permitAll()
-//
-//                        // Permissões para /users
-//                        .requestMatchers(HttpMethod.GET, "/users/**").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
-//                        .requestMatchers(HttpMethod.PUT, "/users/**").permitAll()
-//                        .requestMatchers(HttpMethod.DELETE, "/users/**").permitAll()
-//
-//                        // Permissões para /appointments
-//                        .requestMatchers(HttpMethod.GET, "/appointments/**").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/appointments").permitAll()
-//                        .requestMatchers(HttpMethod.PUT, "/appointments/**").permitAll()
-//                        .requestMatchers(HttpMethod.DELETE, "/appointments/**").permitAll()
-//
-//                        // Qualquer outro endpoint precisa de autenticação
-//                        .anyRequest().authenticated()
-
-                        .requestMatchers("/**").permitAll()
-                );
-
-        return http.build();
+                        .requestMatchers("/auth/**").permitAll()
+                        .anyRequest().authenticated())
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).
+                userDetailsService(userDetailsService)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 }
