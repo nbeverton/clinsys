@@ -3,6 +3,7 @@ package com.nbeverton.clinsys.controller;
 import com.nbeverton.clinsys.dto.AuthRequestDTO;
 import com.nbeverton.clinsys.dto.AuthResponseDTO;
 import com.nbeverton.clinsys.dto.UserDTO;
+import com.nbeverton.clinsys.model.Role;
 import com.nbeverton.clinsys.model.User;
 import com.nbeverton.clinsys.repository.UserRepository;
 import com.nbeverton.clinsys.security.JWTUtil;
@@ -49,7 +50,7 @@ public class AuthController {
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .role(dto.getRole())
+                .role(Role.valueOf(dto.getRole().toUpperCase()))
                 .build();
 
         userRepository.save(user);

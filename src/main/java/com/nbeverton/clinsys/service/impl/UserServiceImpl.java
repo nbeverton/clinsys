@@ -2,6 +2,7 @@ package com.nbeverton.clinsys.service.impl;
 
 import com.nbeverton.clinsys.dto.UserDTO;
 import com.nbeverton.clinsys.dto.UserResponseDTO;
+import com.nbeverton.clinsys.model.Role;
 import com.nbeverton.clinsys.model.User;
 import com.nbeverton.clinsys.repository.UserRepository;
 import com.nbeverton.clinsys.service.UserService;
@@ -21,7 +22,7 @@ public class UserServiceImpl implements UserService {
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .password(dto.getPassword())
-                .role(dto.getRole())
+                .role(Role.valueOf(dto.getRole().toUpperCase()))
                 .build();
 
         return toResponseDTO(repository.save(user));
@@ -49,7 +50,7 @@ public class UserServiceImpl implements UserService {
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
-        user.setRole(dto.getRole());
+        user.setRole(Role.valueOf(dto.getRole().toUpperCase()));
 
         return toResponseDTO(repository.save(user));
     }
@@ -66,7 +67,7 @@ public class UserServiceImpl implements UserService {
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
-                .role(user.getRole())
+                .role(user.getRole().name())
                 .build();
     }
 }
