@@ -37,14 +37,16 @@ public class SecurityConfig {
 
     // Define a cadeia de filtros e regras de segurança:
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()               // Libera login e registro
+                        .requestMatchers("/api/dashboard/**").permitAll()          // Libera o dashboard temporariamente apenas para testes.
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
-                        .anyRequest().authenticated())
+                        .anyRequest().authenticated()
+                )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
