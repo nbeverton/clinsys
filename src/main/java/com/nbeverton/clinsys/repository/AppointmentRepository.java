@@ -16,16 +16,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     long countByPaidTrue();
     long countByPaidFalse();
 
-
-    @Query("""
-        SELECT new com.nbeverton.clinsys.dto.dashboard.LastAppointmentsDTO(
-            a.id, p.name, a.date, a.status, a.paid
-        )
-        FROM Appointment a
-        JOIN a.patient p
-        ORDER BY a.date DESC
-    """)
-
-    List<LastAppointmentsDTO> findTop5ByOrderByDateDesc();
+    List<Appointment> findTop5ByOrderByDateDesc();
 
 }

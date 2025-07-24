@@ -2,6 +2,7 @@ package com.nbeverton.clinsys.service;
 
 import com.nbeverton.clinsys.dto.DashboardDTO;
 import com.nbeverton.clinsys.dto.dashboard.LastAppointmentsDTO;
+import com.nbeverton.clinsys.model.Appointment;
 import com.nbeverton.clinsys.repository.AppointmentRepository;
 import com.nbeverton.clinsys.repository.PatientRepository;
 import jakarta.transaction.Transactional;
@@ -29,7 +30,7 @@ public class DashboardService {
                 LocalDate.now().with(DayOfWeek.SUNDAY)
         );
 
-        List<LastAppointmentsDTO> lastAppointments = appointmentRepository.findTop5ByOrderByDateDesc();
+        List<Appointment> lastAppointments = appointmentRepository.findTop5ByOrderByDateDesc();
 
         long completedAppointments = appointmentRepository.countByStatus("COMPLETED");
         long pendingAppointments = appointmentRepository.countByStatus("PENDING");
@@ -37,11 +38,21 @@ public class DashboardService {
         long paidAppointments = appointmentRepository.countByPaidTrue();
         long unpaidAppointments = appointmentRepository.countByPaidFalse();
 
+        List<LastAppointmentsDTO> lastAppointmentsDTOs = lastAppointments.stream()
+                .map(appointment -> new LastAppointmentsDTO(
+                        appointment.getId(),
+                        appointment.getPatient().getName(),
+                        appointment.getDate(),
+                        appointment.getStatus(),
+                        appointment.isPaid()
+                ))
+                .toList();
+
         return new DashboardDTO(
                 totalPatients,
                 appointmentsToday,
                 appointmentsThisWeek,
-                lastAppointments,
+                lastAppointmentsDTOs,
                 completedAppointments,
                 pendingAppointments,
                 paidAppointments,

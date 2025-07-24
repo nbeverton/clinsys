@@ -4,11 +4,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class AppointmentDTO {
 
     @NotBlank(message = "O campo data é obrigatório")
-    private String date;
+    private LocalDate date;
 
     @NotBlank(message = "O campo hora é obrigatório")
     private String time;
