@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Data
 public class AppointmentDTO {
 
-    @NotBlank(message = "O campo data é obrigatório")
+    @NotNull(message = "O campo data é obrigatório")
     private LocalDate date;
 
     @NotBlank(message = "O campo hora é obrigatório")
