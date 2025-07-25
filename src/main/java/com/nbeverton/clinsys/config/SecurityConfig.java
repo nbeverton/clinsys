@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()               // Libera login e registro
-                        .requestMatchers("/api/dashboard/**").permitAll()          // Libera o dashboard temporariamente apenas para testes.
+//                        .requestMatchers("/api/dashboard/**").permitAll()          // Libera o dashboard temporariamente apenas para testes.
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/patients/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated()
