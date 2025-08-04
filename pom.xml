@@ -108,9 +108,14 @@
 
 		<!-- HTTP Client (para fazer requisições) -->
 		<dependency>
+			<groupId>org.apache.httpcomponents.core5</groupId>
+			<artifactId>httpcore5</artifactId>
+			<version>5.3.4</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.httpcomponents.client5</groupId>
-			<artifactId>httpclient5</artifactId>
-			<version>5.2</version>
+			<artifactId>httpclient5-win</artifactId> <!-- importante p/ TLS em alguns ambientes -->
+			<version>5.2.1</version>
 		</dependency>
 
 		<!-- JSON Parser -->
@@ -118,7 +123,6 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
-
 
     </dependencies>
 
