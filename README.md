@@ -1,20 +1,31 @@
 # 🏥 ClinSys – Sistema de Gestão para Profissionais da Saúde
 
-**ClinSys** é uma aplicação backend desenvolvida com **Java + Spring Boot**, com o objetivo de facilitar a gestão de pacientes e consultas em clínicas e consultórios. É voltado para profissionais independentes da área de saúde e que fazem a própria gestão de pacientes.
-Este projeto também serve como portfólio para demonstrar minha habilidade em backend Java, arquitetura de software e segurança com tokens JWT.
+O ClinSys é uma aplicação desenvolvida para facilitar a rotina de profissionais da saúde que gerenciam seus próprios pacientes e consultas, como médicos, psicólogos, fisioterapeutas, nutricionistas e terapeutas.
+
+O sistema foi criado inicialmente como uma aplicação backend com Java 17 e Spring Boot 3.5, oferecendo segurança, organização e escalabilidade para o gerenciamento de dados sensíveis.
+Com a conclusão da primeira etapa (backend), o projeto segue agora para a segunda fase: o desenvolvimento do frontend web, utilizando Bootstrap para criar uma interface simples, responsiva e amigável.
 
 ---
 
 ## 🚀 Funcionalidades
 
+### Backend
 - ✅ Cadastro de pacientes
 - ✅ Agendamento de consultas com status de pagamento (pago ou pendente)
 - ✅ Autenticação com Spring Security + JWT
 - ✅ Registro e login de usuários com criptografia de senha
 - ✅ Proteção de rotas e autorização baseada em tokens
-- 📊 Dashboard com estatísticas (em desenvolvimento)
-- 📬 Notificações por e-mail ou WhatsApp (futuro)
-- 🌐 Frontend em React ou React Native (futuro)
+- ✅ Criptografia de senhas com BCrypt
+- ✅ Notificações por e-mail ou WhatsApp
+- ✅ Estrutura em camadas com DTOs, validações e tratamento global de erros
+
+### Frontend
+- Interface web responsiva com Bootstrap
+- Listagem e cadastro de pacientes
+- Agendamento e gerenciamento de consultas
+- Autenticação e login de usuários
+- Consumo da API backend via REST
+- Painel administrativo com estatísticas e relatórios
 
 ---
 
@@ -40,7 +51,12 @@ Este projeto também serve como portfólio para demonstrar minha habilidade em b
 - Lombok  
 - Maven  
 - Swagger (documentação futura)  
-- (Em breve: React ou React Native)
+
+- HTML5
+- CSS3
+- JavaScript
+- Bootstrap 5
+- Axios (consumo de API)
 
 ---
 
@@ -48,25 +64,25 @@ Este projeto também serve como portfólio para demonstrar minha habilidade em b
 
 src
 
-└── main
-
-└── java
-
-└── com.nbeverton.clinsys
-
-├── model
-
-├── repository
-
-├── controller
-
-├── service
-
-├── dto
-
-├── security
-
-└── config
+ └── main
+ 
+     └── java
+     
+         └── com.nbeverton.clinsys
+         
+             ├── model        # Entidades do sistema
+             
+             ├── repository   # Interfaces JPA para persistência
+             
+             ├── service      # Regras de negócio
+             
+             ├── controller   # Pontos de entrada da API (REST)
+             
+             ├── dto          # Objetos de transferência de dados
+             
+             ├── security     # Configuração de autenticação/autorização
+             
+             └── config       # Configurações gerais do sistema
 
 
 
