@@ -29,7 +29,6 @@ public class AuthController {
     private final JWTUtil jwtUtil;
 
 
-    // Atualizações feitas aqui.
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody AuthRequestDTO request) {
         authenticationManager.authenticate(
@@ -37,10 +36,11 @@ public class AuthController {
         );
 
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-        var token = jwtUtil.generateToken(user.getUsername());
+        var token = jwtUtil.generateToken(user.getEmail(), user.getRole().name()); // << email como subject
 
         return ResponseEntity.ok(AuthResponseDTO.builder().token(token).build());
     }
+
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody UserDTO dto) {
@@ -56,7 +56,8 @@ public class AuthController {
                 .build();
 
         userRepository.save(user);
-        var token = jwtUtil.generateToken(user.getUsername());
+
+        var token = jwtUtil.generateToken(user.getEmail(), user.getRole().name()); // << email como subject
 
         return ResponseEntity.ok(AuthResponseDTO.builder().token(token).build());
     }
