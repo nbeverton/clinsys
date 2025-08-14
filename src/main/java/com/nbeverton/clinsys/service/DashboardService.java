@@ -21,20 +21,27 @@ public class DashboardService {
     private final AppointmentRepository appointmentRepository;
 
     @Transactional
-    public DashboardDTO getDashboardData() {
+    public DashboardDTO buildSummary() {
+        // Total de pacientes
         long totalPatients = patientRepository.count();
 
-        long appointmentsToday = appointmentRepository.countByDate(LocalDate.now());
-        long appointmentsThisWeek = appointmentRepository.countByDateBetween(
-                LocalDate.now().with(DayOfWeek.MONDAY),
-                LocalDate.now().with(DayOfWeek.SUNDAY)
-        );
+        // Consultas de hoje
+        LocalDate today = LocalDate.now();
+        long appointmentsToday = appointmentRepository.countByDate(today);
 
+        // Consultas da semana
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek   = today.with(DayOfWeek.SUNDAY);
+        long appointmentsThisWeek = appointmentRepository.countByDateBetween(startOfWeek, endOfWeek);
+
+        // últimas consultas
         List<Appointment> lastAppointments = appointmentRepository.findTop5ByOrderByDateDesc();
 
+        // Contagem por status
         long completedAppointments = appointmentRepository.countByStatus("COMPLETED");
         long pendingAppointments = appointmentRepository.countByStatus("PENDING");
 
+        // Status de pagamento
         long paidAppointments = appointmentRepository.countByPaidTrue();
         long unpaidAppointments = appointmentRepository.countByPaidFalse();
 

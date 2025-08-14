@@ -15,10 +15,9 @@ public class DashboardController {
 
     private final DashboardService dashboardService;
 
-    @GetMapping
-    public ResponseEntity<DashboardDTO> getDashboardData(){
-        DashboardDTO dto = dashboardService.getDashboardData();
-        return ResponseEntity.ok(dto);
+    @GetMapping("/summary")
+    public ResponseEntity<DashboardDTO> getSummary() {
+        return ResponseEntity.ok(dashboardService.buildSummary());
     }
 
 }

@@ -10,13 +10,13 @@ import java.util.List;
 @AllArgsConstructor
 public class DashboardDTO {
 
-    private long totalPacientes;
-    private long consultasHoje;
-    private long consultasSemana;
-    private List<LastAppointmentsDTO> ultimosAgendamentos;
-    private long consultasConcluidas;
-    private long consultasPendentes;
-    private long pagamentosConcluidos;
-    private long pagamentosPendentes;
+    private long totalPatients;
+    private long appointmentsToday;
+    private long appointmentsThisWeek;
+    private List<LastAppointmentsDTO> lastAppointments;
+    private long completedAppointments;
+    private long pendingAppointments;
+    private long paidAppointments;
+    private long unpaidAppointments;
 
 }
