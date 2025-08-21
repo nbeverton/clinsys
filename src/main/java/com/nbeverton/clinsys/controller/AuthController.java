@@ -52,7 +52,7 @@ public class AuthController {
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .role(Role.valueOf(dto.getRole().toUpperCase()))
+                .role(dto.getRole())
                 .build();
 
         userRepository.save(user);

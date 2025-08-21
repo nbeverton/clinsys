@@ -30,7 +30,7 @@ public class SecurityConfig {
     private final JWTAuthenticationFilter jwtAuthFilter;
     private final UserDetailsServiceImpl userDetailsService;
 
-    // Define o encoder para a senha:
+    // Define o encoder para a senha
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
@@ -45,9 +45,9 @@ public class SecurityConfig {
         return provider;
     }
 
-    // Define o gerenciador de autentificação:
+    // Define o gerenciador de autentificação
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
@@ -58,6 +58,7 @@ public class SecurityConfig {
         cfg.setAllowedOrigins(List.of("http://localhost:5500", "http://127.0.0.1:5500"));
         cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         cfg.setAllowedHeaders(List.of("Authorization","Content-Type"));
+        cfg.setExposedHeaders(List.of("Authorization")); // 🔹 permite que o front leia o header Authorization
         cfg.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -65,12 +66,12 @@ public class SecurityConfig {
         return source;
     }
 
-    // Define a cadeia de filtros e regras de segurança:
+    // Define a cadeia de filtros e regras de segurança
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable())                 // REST stateless → desabilita CSRF
-                .cors(cors -> {})                             // habilita CORS com o bean acima
+                .csrf(csrf -> csrf.disable()) // REST stateless → desabilita CSRF
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 🔹 define explicitamente o bean
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider()) // usa nosso provider
                 .authorizeHttpRequests(auth -> auth
@@ -80,7 +81,5 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-
     }
-
 }

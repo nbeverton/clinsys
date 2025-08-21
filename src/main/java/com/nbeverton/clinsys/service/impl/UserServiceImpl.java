@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .password(dto.getPassword())
-                .role(Role.valueOf(dto.getRole().toUpperCase()))
+                .role(dto.getRole())
                 .build();
 
         return toResponseDTO(repository.save(user));
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
-        user.setRole(Role.valueOf(dto.getRole().toUpperCase()));
+        user.setRole(dto.getRole());
 
         return toResponseDTO(repository.save(user));
     }

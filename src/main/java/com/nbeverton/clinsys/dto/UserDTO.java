@@ -1,7 +1,9 @@
 package com.nbeverton.clinsys.dto;
 
+import com.nbeverton.clinsys.model.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -17,7 +19,7 @@ public class UserDTO {
     @NotBlank(message = "O campo senha é obrigatório!")
     private String password;
 
-    @NotBlank(message = "O campo perfil é obrigatório!")
-    private String role;
+    @NotNull(message = "O campo perfil é obrigatório!")
+    private Role role;
 
 }
