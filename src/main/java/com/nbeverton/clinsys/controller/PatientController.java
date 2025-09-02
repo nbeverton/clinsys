@@ -5,6 +5,8 @@ import com.nbeverton.clinsys.dto.PatientResponseDTO;
 import com.nbeverton.clinsys.service.PatientService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +25,15 @@ public class PatientController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PatientResponseDTO>> getAll() {
-        return ResponseEntity.ok(service.getAllPatients());
+    public ResponseEntity<Page<PatientResponseDTO>> getAll(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "q", required = false) String q,
+            Pageable pageable) {
+
+        // tolerância: usa 'name' se fornecido, senão usa 'q'
+        String filter = (name != null && !name.isBlank()) ? name : q;
+        Page<PatientResponseDTO> page = service.getAllPatients(filter, pageable);
+        return ResponseEntity.ok(page);
     }
 
     @GetMapping("/{id}")

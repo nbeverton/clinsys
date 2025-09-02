@@ -6,6 +6,8 @@ import com.nbeverton.clinsys.model.Patient;
 import com.nbeverton.clinsys.repository.PatientRepository;
 import com.nbeverton.clinsys.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,11 +38,16 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public List<PatientResponseDTO> getAllPatients() {
-        return repository.findAll()
-                .stream()
-                .map(this::toResponseDTO)
-                .toList();
+    public Page<PatientResponseDTO> getAllPatients(String nameFilter, Pageable pageable) {
+        Page<Patient> page;
+        if (nameFilter != null && !nameFilter.trim().isEmpty()) {
+            page = repository.findByNameContainingIgnoreCase(nameFilter.trim(), pageable);
+        } else {
+            page = repository.findAll(pageable);
+        }
+
+        // mapeia Page<Patient> -> Page<PatientResponseDTO>
+        return page.map(this::toResponseDTO);
     }
 
     @Override
