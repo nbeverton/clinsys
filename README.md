@@ -2,8 +2,12 @@
 
 O ClinSys é uma aplicação desenvolvida para facilitar a rotina de profissionais da saúde que gerenciam seus próprios pacientes e consultas, como médicos, psicólogos, fisioterapeutas, nutricionistas e terapeutas.
 
-O sistema foi criado inicialmente como uma aplicação backend com Java 17 e Spring Boot 3.5, oferecendo segurança, organização e escalabilidade para o gerenciamento de dados sensíveis.
-Com a conclusão da primeira etapa (backend), o projeto segue agora para a segunda fase: o desenvolvimento do frontend web, utilizando Bootstrap para criar uma interface simples, responsiva e amigável.
+O sistema foi projetado inicialmente como uma API backend em Java 17 com Spring Boot 3.5, fornecendo segurança, escalabilidade e organização no gerenciamento de dados sensíveis.
+
+Sua arquitetura é baseada em camadas bem definidas (Controller → Service → Repository), utilizando DTOs, validações e tratamento global de erros. Isso garante separação de responsabilidades, maior testabilidade e clareza no fluxo entre front-end e back-end.
+Atualmente, a API é consumida via REST por meio de endpoints protegidos com autenticação JWT.
+
+Link para o fronted: https://github.com/nbeverton/clinsys_frontend/blob/main/README.md
 
 ---
 
@@ -18,6 +22,7 @@ Com a conclusão da primeira etapa (backend), o projeto segue agora para a segun
 - ✅ Criptografia de senhas com BCrypt
 - ✅ Notificações por e-mail ou WhatsApp
 - ✅ Estrutura em camadas com DTOs, validações e tratamento global de erros
+- ✅ Exposição de endpoints REST documentados e organizados como API
 
 ### Frontend
 - Interface web responsiva com Bootstrap
@@ -52,15 +57,16 @@ Com a conclusão da primeira etapa (backend), o projeto segue agora para a segun
 - Maven  
 - Swagger (documentação futura)  
 
-- HTML5
-- CSS3
-- JavaScript
-- Bootstrap 5
-- Axios (consumo de API)
+---
+
+## 💾 Arquitetura e Estrutura do Projeto
+
+A arquitetura do sistema segue o padrão Layered Architecture (N-Tier):
+[Cliente / Frontend] ⇆ [API / Controllers] ⇆ [Service Layer] ⇆ [Repository Layer] ⇆ [Banco de Dados]
 
 ---
 
-## 💾 Estrutura do Projeto
+Aestrutura do projeto segue a ordem hierárquica:
 
 src
 
