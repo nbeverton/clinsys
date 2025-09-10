@@ -7,7 +7,7 @@ O sistema foi projetado inicialmente como uma API backend em Java 17 com Spring 
 Sua arquitetura é baseada em camadas bem definidas (Controller → Service → Repository), utilizando DTOs, validações e tratamento global de erros. Isso garante separação de responsabilidades, maior testabilidade e clareza no fluxo entre front-end e back-end.
 Atualmente, a API é consumida via REST por meio de endpoints protegidos com autenticação JWT.
 
-Link para o fronted: https://github.com/nbeverton/clinsys_frontend/blob/main/README.md
+Link para o fronted: https://github.com/nbeverton/clinsys_frontend
 
 ---
 
