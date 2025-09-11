@@ -86,6 +86,7 @@ public class PatientServiceImpl implements PatientService {
                 .phone(patient.getPhone())
                 .birthDate(patient.getBirthDate())
                 .gender(patient.getGender())
+                .cpf(formatCpfForResponse(patient.getCpf()))
                 .build();
     }
 
