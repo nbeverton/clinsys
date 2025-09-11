@@ -23,6 +23,10 @@ public class Patient {
     private String gender;
     private String birthDate;
 
+    // CPF armazenado sem formatação: apenas dígitos (11)
+    @Column(length = 11, unique = true)
+    private String cpf;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

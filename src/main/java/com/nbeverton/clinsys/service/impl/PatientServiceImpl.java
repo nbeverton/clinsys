@@ -20,12 +20,15 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public PatientResponseDTO createPatient(PatientDTO dto) {
+        String normalizedCpf = normalizeCpf(dto.getCpf());
+
         Patient patient = Patient.builder()
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .phone(dto.getPhone())
                 .birthDate(dto.getBirthDate())
                 .gender(dto.getGender())
+                .cpf(normalizedCpf)
                 .build();
 
         return toResponseDTO(repository.save(patient));
@@ -38,15 +41,18 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public Page<PatientResponseDTO> getAllPatients(String nameFilter, Pageable pageable) {
+    public Page<PatientResponseDTO> getAllPatients(String nameFilter, String cpfFilter, Pageable pageable) {
         Page<Patient> page;
-        if (nameFilter != null && !nameFilter.trim().isEmpty()) {
+
+        if (cpfFilter != null && !cpfFilter.trim().isEmpty()) {
+            String normalizedCpf = normalizeCpf(cpfFilter.trim());
+            page = repository.findByCpfContaining(normalizedCpf, pageable);
+        } else if (nameFilter != null && !nameFilter.trim().isEmpty()) {
             page = repository.findByNameContainingIgnoreCase(nameFilter.trim(), pageable);
         } else {
             page = repository.findAll(pageable);
         }
 
-        // mapeia Page<Patient> -> Page<PatientResponseDTO>
         return page.map(this::toResponseDTO);
     }
 
@@ -60,6 +66,7 @@ public class PatientServiceImpl implements PatientService {
         existing.setPhone(dto.getPhone());
         existing.setBirthDate(dto.getBirthDate());
         existing.setGender(dto.getGender());
+        existing.setCpf(normalizeCpf(dto.getCpf()));
 
         return toResponseDTO(repository.save(existing));
     }
@@ -80,5 +87,17 @@ public class PatientServiceImpl implements PatientService {
                 .birthDate(patient.getBirthDate())
                 .gender(patient.getGender())
                 .build();
+    }
+
+    // remove qualquer caractere que não seja dígito (normalização antes de salvar)
+    private String normalizeCpf(String cpf) {
+        if (cpf == null) return null;
+        return cpf.replaceAll("\\D", ""); // apenas dígitos
+    }
+
+    // opcional: formata para 000.000.000-00 no response (para a UI)
+    private String formatCpfForResponse(String cpf) {
+        if (cpf == null || cpf.length() != 11) return cpf;
+        return cpf.substring(0,3) + "." + cpf.substring(3,6) + "." + cpf.substring(6,9) + "-" + cpf.substring(9);
     }
 }

@@ -10,8 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/patients")
 public class PatientController {
@@ -28,11 +26,12 @@ public class PatientController {
     public ResponseEntity<Page<PatientResponseDTO>> getAll(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "q", required = false) String q,
+            @RequestParam(value = "cpf", required = false) String cpf,
             Pageable pageable) {
 
-        // tolerância: usa 'name' se fornecido, senão usa 'q'
-        String filter = (name != null && !name.isBlank()) ? name : q;
-        Page<PatientResponseDTO> page = service.getAllPatients(filter, pageable);
+        // usa 'name' se fornecido, senão usa 'q' — cpf tem preferência quando informado
+        String nameFilter = (name != null && !name.isBlank()) ? name : q;
+        Page<PatientResponseDTO> page = service.getAllPatients(nameFilter, cpf, pageable);
         return ResponseEntity.ok(page);
     }
 

@@ -13,5 +13,6 @@ public class PatientResponseDTO {
     private String phone;
     private String birthDate;
     private String gender;
+    private String cpf;
 
 }
