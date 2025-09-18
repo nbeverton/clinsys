@@ -84,6 +84,13 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     private AppointmentResponseDTO toResponseDTO(Appointment a) {
+        // proteger contra nulls por segurança
+        Long patientId = a.getPatient() != null ? a.getPatient().getId() : null;
+        String patientName = a.getPatient() != null ? a.getPatient().getName() : null;
+
+        Long userId = a.getUser() != null ? a.getUser().getId() : null;
+        String userName = a.getUser() != null ? a.getUser().getName() : null;
+
         return AppointmentResponseDTO.builder()
                 .id(a.getId())
                 .date(a.getDate())
@@ -91,8 +98,10 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .description(a.getDescription())
                 .status(a.getStatus())
                 .paid(a.isPaid())
-                .patientName(a.getPatient().getName())
-                .userName(a.getUser().getName())
+                .patientName(patientName)
+                .userName(userName)
+                .patientId(patientId)
+                .userId(userId)
                 .build();
     }
 

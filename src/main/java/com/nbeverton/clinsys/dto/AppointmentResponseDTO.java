@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public class AppointmentResponseDTO {
 
     private Long id;
-    private LocalDate date;
+    private java.time.LocalDate date;
     private String time;
     private String description;
     private String status;
@@ -18,5 +18,9 @@ public class AppointmentResponseDTO {
 
     private String patientName;
     private String userName;
+
+    // IDs diretos para facilitar edição no front.
+    private Long patientId;
+    private Long userId;
 
 }
