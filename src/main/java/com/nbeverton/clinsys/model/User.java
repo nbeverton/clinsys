@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -43,11 +44,14 @@ public class User implements UserDetails {
     @EqualsAndHashCode.Exclude
     private List<Appointment> appointments;
 
-    // Para poder personalizar permissões (simples neste caso):
+    // Para poder personalizar permissões (simples neste caso) - No futuro separar melhor Roles:
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
     }
+
+    // para setar a troca de senha:
+    private LocalDateTime passwordChangedAt;
 
     @Override
     public String getUsername() {
