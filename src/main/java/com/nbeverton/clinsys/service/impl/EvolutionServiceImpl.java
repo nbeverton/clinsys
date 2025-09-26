@@ -2,18 +2,17 @@ package com.nbeverton.clinsys.service.impl;
 
 import com.nbeverton.clinsys.dto.EvolutionDTO;
 import com.nbeverton.clinsys.dto.EvolutionResponseDTO;
-import com.nbeverton.clinsys.model.Appointment;
 import com.nbeverton.clinsys.model.Evolution;
 import com.nbeverton.clinsys.model.Patient;
-import com.nbeverton.clinsys.model.User;
 import com.nbeverton.clinsys.repository.AppointmentRepository;
 import com.nbeverton.clinsys.repository.EvolutionRepository;
 import com.nbeverton.clinsys.repository.PatientRepository;
-import com.nbeverton.clinsys.repository.UserRepository;
+import com.nbeverton.clinsys.security.AuthenticatedUserService;
 import com.nbeverton.clinsys.service.EvolutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,32 +27,32 @@ public class EvolutionServiceImpl implements EvolutionService {
     private PatientRepository patientRepo;
 
     @Autowired
-    private UserRepository userRepo;
+    private AppointmentRepository appointmentRepo;
 
     @Autowired
-    private AppointmentRepository appointmentRepo;
+    private AuthenticatedUserService auth;
 
 
     @Override
     public EvolutionResponseDTO create(EvolutionDTO dto) {
-        Patient patient = patientRepo.findById(dto.getPatientId())
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+        var current = auth.getCurrentUserOrThrow();
+
+        Patient patient = patientRepo.findByIdAndUser_Id(dto.getPatientId(), current.getId())
+                .orElseThrow(() -> new AccessDeniedException("Paciente não encontrado ou sem permissão."));
 
         Evolution e = Evolution.builder()
                 .content(dto.getContent())
                 .patient(patient)
+                .author(current)
                 .build();
 
-        if (dto.getAuthorId() != null) {
-            User u = userRepo.findById(dto.getAuthorId())
-                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-            e.setAuthor(u);
-        }
-
         if (dto.getAppointmentId() != null) {
-            Appointment a = appointmentRepo.findById(dto.getAppointmentId())
-                    .orElseThrow(() -> new RuntimeException("Consulta não encontrada"));
-            e.setAppointment(a);
+            var appt = appointmentRepo.findByIdAndUser_Id(dto.getAppointmentId(), current.getId())
+                    .orElseThrow(() -> new AccessDeniedException("Consulta não encontrada ou usuário sem permissão."));
+            if (!appt.getPatient().getId().equals(patient.getId())) {
+                throw new IllegalArgumentException("A consulta não pertence ao paciente informado.");
+            }
+            e.setAppointment(appt);
         }
 
         Evolution saved = repo.save(e);
@@ -62,24 +61,18 @@ public class EvolutionServiceImpl implements EvolutionService {
 
     @Override
     public EvolutionResponseDTO update(Long id, EvolutionDTO dto) {
-        Evolution existing = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evolução não encontrada"));
+        var current = auth.getCurrentUserOrThrow();
 
-        // atualiza conteúdo
+        Evolution existing = repo.findByIdAndPatient_User_Id(id, current.getId())
+                .orElseThrow(() -> new AccessDeniedException("Evolução não encontrada ou usuário sem permissão."));
+
         existing.setContent(dto.getContent());
-
-        // opcional: atualizar autor (se fornecido)
-        if (dto.getAuthorId() != null) {
-            User u = userRepo.findById(dto.getAuthorId())
-                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-            existing.setAuthor(u);
-        }
 
         // opcional: vincular/atualizar appointment
         if (dto.getAppointmentId() != null) {
-            Appointment a = appointmentRepo.findById(dto.getAppointmentId())
-                    .orElseThrow(() -> new RuntimeException("Consulta não encontrada"));
-            existing.setAppointment(a);
+            var appt = appointmentRepo.findByIdAndUser_Id(dto.getAppointmentId(), current.getId())
+                    .orElseThrow(() -> new AccessDeniedException("Consulta não encontrada ou usuário sem permissão."));
+            existing.setAppointment(appt);
         }
 
         Evolution updated = repo.save(existing);
@@ -88,23 +81,32 @@ public class EvolutionServiceImpl implements EvolutionService {
 
     @Override
     public void delete(Long id) {
-        Evolution e = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evolução não encontrada!"));
+        var current = auth.getCurrentUserOrThrow();
+
+        Evolution e = repo.findByIdAndPatient_User_Id(id, current.getId())
+                .orElseThrow(() -> new AccessDeniedException("Evolução não encontrada ou usuário sem permissão."));
         repo.delete(e);
     }
 
     @Override
     @Transactional(readOnly = true)
     public EvolutionResponseDTO getById(Long id) {
-        Evolution e = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evolução não encontrada!"));
+        var current = auth.getCurrentUserOrThrow();
+
+        Evolution e = repo.findByIdAndPatient_User_Id(id, current.getId())
+                .orElseThrow(() -> new AccessDeniedException("Evolução não encontrada ou usuário sem permissão."));
         return toResponseDTO(e);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<EvolutionResponseDTO> getByPatient(Long patientId, Pageable pageable) {
-        Page<Evolution> page = repo.findByPatientId(patientId, pageable);
+        var current = auth.getCurrentUserOrThrow();
+
+        patientRepo.findByIdAndUser_Id(patientId, current.getId())
+                .orElseThrow(() -> new AccessDeniedException("Paciente não encontrado."));
+
+        Page<Evolution> page = repo.findByPatient_IdAndPatient_User_Id(patientId, current.getId(), pageable);
         return page.map(this::toResponseDTO);
     }
 

@@ -4,17 +4,19 @@ import com.nbeverton.clinsys.dto.AppointmentDTO;
 import com.nbeverton.clinsys.dto.AppointmentResponseDTO;
 import com.nbeverton.clinsys.model.Appointment;
 import com.nbeverton.clinsys.model.Patient;
-import com.nbeverton.clinsys.model.User;
 import com.nbeverton.clinsys.repository.AppointmentRepository;
 import com.nbeverton.clinsys.repository.PatientRepository;
-import com.nbeverton.clinsys.repository.UserRepository;
+import com.nbeverton.clinsys.security.AuthenticatedUserService;
 import com.nbeverton.clinsys.service.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class AppointmentServiceImpl implements AppointmentService {
 
     @Autowired
@@ -24,15 +26,14 @@ public class AppointmentServiceImpl implements AppointmentService {
     private PatientRepository patientRepo;
 
     @Autowired
-    private UserRepository userRepo;
+    private AuthenticatedUserService auth;
 
     @Override
     public AppointmentResponseDTO createAppointment(AppointmentDTO dto) {
-        Patient patient = patientRepo.findById(dto.getPatientId())
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+        var current = auth.getCurrentUserOrThrow();
 
-        User user = userRepo.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        Patient patient = patientRepo.findByIdAndUser_Id(dto.getPatientId(), current.getId())
+                .orElseThrow(() -> new AccessDeniedException("Paciente não encontrado ou sem permissão"));
 
         Appointment appointment = Appointment.builder()
                 .date(dto.getDate())
@@ -41,7 +42,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .status(dto.getStatus())
                 .paid(dto.isPaid())
                 .patient(patient)
-                .user(user)
+                .user(current)      // Aqui eu faço com que o usuário seja o autor da consulta.
                 .build();
 
         return toResponseDTO(repository.save(appointment));
@@ -49,28 +50,28 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public AppointmentResponseDTO getAppointmentById(Long id) {
-        return toResponseDTO(repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Consulta não encontrada")));
+        Long uid = auth.getCurrentUserIdOrThrow();
+
+        Appointment a = repository.findByIdAndUser_Id(id, uid)
+                .orElseThrow(() -> new AccessDeniedException("Consulta não encontrada ou sem permissão!"));
+        return toResponseDTO(a);
     }
 
-    @Override
-    public List<AppointmentResponseDTO> getAllAppointments() {
-        return repository.findAll()
-                .stream()
-                .map(this::toResponseDTO)
-                .toList();
+
+    public Page<AppointmentResponseDTO> getAllAppointments(Pageable pageable) {
+        Long uid = auth.getCurrentUserIdOrThrow();
+        return repository.findByUser_Id(uid, pageable).map(this::toResponseDTO);
     }
 
     @Override
     public AppointmentResponseDTO updateAppointment(Long id, AppointmentDTO dto) {
-        Appointment appointment = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Consulta não encontrada"));
+        var current = auth.getCurrentUserOrThrow();
 
-        Patient patient = patientRepo.findById(dto.getPatientId())
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+        Appointment appointment = repository.findByIdAndUser_Id(id, current.getId())
+                .orElseThrow(() -> new AccessDeniedException("Consulta não encontrada ou sem permissão."));
 
-        User user = userRepo.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        Patient patient = patientRepo.findByIdAndUser_Id(dto.getPatientId(), current.getId())
+                .orElseThrow(() -> new AccessDeniedException("Paciente não encontrado ou sem permissão."));
 
         appointment.setDate(dto.getDate());
         appointment.setTime(dto.getTime());
@@ -78,9 +79,18 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setStatus(dto.getStatus());
         appointment.setPaid(dto.isPaid());
         appointment.setPatient(patient);
-        appointment.setUser(user);
+        appointment.setUser(current);
 
         return toResponseDTO(repository.save(appointment));
+    }
+
+    @Override
+    public void deleteAppointment(Long id) {
+        Long uid = auth.getCurrentUserIdOrThrow();
+
+        Appointment a = repository.findByIdAndUser_Id(id, uid)
+                .orElseThrow(() -> new AccessDeniedException("Consulta não encontrada ou sem permissão."));
+        repository.delete(a);
     }
 
     private AppointmentResponseDTO toResponseDTO(Appointment a) {
@@ -103,12 +113,5 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .patientId(patientId)
                 .userId(userId)
                 .build();
-    }
-
-    @Override
-    public void deleteAppointment(Long id) {
-        Appointment a = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Consulta não encontrada"));
-        repository.delete(a);
     }
 }

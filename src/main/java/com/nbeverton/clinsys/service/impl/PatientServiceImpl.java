@@ -4,23 +4,29 @@ import com.nbeverton.clinsys.dto.PatientDTO;
 import com.nbeverton.clinsys.dto.PatientResponseDTO;
 import com.nbeverton.clinsys.model.Patient;
 import com.nbeverton.clinsys.repository.PatientRepository;
+import com.nbeverton.clinsys.security.AuthenticatedUserService;
 import com.nbeverton.clinsys.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class PatientServiceImpl implements PatientService {
 
     @Autowired
     private PatientRepository repository;
 
+    @Autowired
+    private AuthenticatedUserService auth;
+
     @Override
     public PatientResponseDTO createPatient(PatientDTO dto) {
         String normalizedCpf = normalizeCpf(dto.getCpf());
+        var current = auth.getCurrentUserOrThrow();
 
         Patient patient = Patient.builder()
                 .name(dto.getName())
@@ -29,6 +35,7 @@ public class PatientServiceImpl implements PatientService {
                 .birthDate(dto.getBirthDate())
                 .gender(dto.getGender())
                 .cpf(normalizedCpf)
+                .user(current)
                 .build();
 
         return toResponseDTO(repository.save(patient));
@@ -36,21 +43,25 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public PatientResponseDTO getPatientById(Long id) {
-        return toResponseDTO(repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado")));
+        Long uid = auth.getCurrentUserIdOrThrow();
+        Patient p = repository.findByIdAndUser_Id(id, uid)
+                .orElseThrow(() -> new AccessDeniedException("Paciente não encontrado ou sem permissão"));
+
+        return toResponseDTO(p);
     }
 
     @Override
     public Page<PatientResponseDTO> getAllPatients(String nameFilter, String cpfFilter, Pageable pageable) {
+        Long uid = auth.getCurrentUserIdOrThrow();
         Page<Patient> page;
 
         if (cpfFilter != null && !cpfFilter.trim().isEmpty()) {
             String normalizedCpf = normalizeCpf(cpfFilter.trim());
-            page = repository.findByCpfContaining(normalizedCpf, pageable);
+            page = repository.findByUser_IdAndCpfContaining(uid, normalizedCpf, pageable);
         } else if (nameFilter != null && !nameFilter.trim().isEmpty()) {
-            page = repository.findByNameContainingIgnoreCase(nameFilter.trim(), pageable);
+            page = repository.findByUser_IdAndNameContainingIgnoreCase(uid, nameFilter.trim(), pageable);
         } else {
-            page = repository.findAll(pageable);
+            page = repository.findByUser_Id(uid, pageable);
         }
 
         return page.map(this::toResponseDTO);
@@ -58,8 +69,9 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public PatientResponseDTO updatePatient(Long id, PatientDTO dto) {
-        Patient existing = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+        Long uid = auth.getCurrentUserIdOrThrow();
+        Patient existing = repository.findByIdAndUser_Id(id, uid)
+                .orElseThrow(() -> new AccessDeniedException("Paciente não encontrado ou sem permissão"));
 
         existing.setName(dto.getName());
         existing.setEmail(dto.getEmail());
@@ -73,8 +85,9 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public void deletePatient(Long id) {
-        Patient patient = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado!"));
+        Long uid = auth.getCurrentUserIdOrThrow();
+        Patient patient = repository.findByIdAndUser_Id(id, uid)
+                .orElseThrow(() -> new AccessDeniedException("Paciente não encontrado ou sem permissão!"));
         repository.delete(patient);
     }
 

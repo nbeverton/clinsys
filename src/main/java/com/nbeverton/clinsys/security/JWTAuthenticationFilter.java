@@ -1,6 +1,5 @@
 package com.nbeverton.clinsys.security;
 
-import com.nbeverton.clinsys.dto.UserDTO;
 import com.nbeverton.clinsys.service.impl.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

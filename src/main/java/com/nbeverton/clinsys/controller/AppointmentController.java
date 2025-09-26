@@ -2,14 +2,13 @@ package com.nbeverton.clinsys.controller;
 
 import com.nbeverton.clinsys.dto.AppointmentDTO;
 import com.nbeverton.clinsys.dto.AppointmentResponseDTO;
-import com.nbeverton.clinsys.model.Appointment;
 import com.nbeverton.clinsys.service.AppointmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -24,8 +23,8 @@ public class AppointmentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AppointmentResponseDTO>> getAll() {
-        return ResponseEntity.ok(service.getAllAppointments());
+    public ResponseEntity<Page<AppointmentResponseDTO>> getAll(Pageable pageable) {
+        return ResponseEntity.ok(service.getAllAppointments(pageable));
     }
 
     @GetMapping("/{id}")

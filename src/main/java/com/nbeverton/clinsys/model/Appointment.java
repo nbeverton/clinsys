@@ -25,11 +25,11 @@ public class Appointment {
     private String status; // Cancelado, agendado, concluido
     private boolean paid; // Flag de pagamento
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
