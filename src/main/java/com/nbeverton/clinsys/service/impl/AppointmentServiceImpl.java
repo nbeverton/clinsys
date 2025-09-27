@@ -15,6 +15,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class AppointmentServiceImpl implements AppointmentService {
@@ -61,6 +63,17 @@ public class AppointmentServiceImpl implements AppointmentService {
     public Page<AppointmentResponseDTO> getAllAppointments(Pageable pageable) {
         Long uid = auth.getCurrentUserIdOrThrow();
         return repository.findByUser_Id(uid, pageable).map(this::toResponseDTO);
+    }
+
+    @Override
+    public List<AppointmentResponseDTO> getByPatient(Long patientId){
+        var current = auth.getCurrentUserOrThrow();
+
+        patientRepo.findByIdAndUser_Id(patientId, current.getId())
+                .orElseThrow(() -> new AccessDeniedException("Paciente não encontrado ou usuário sem permissão"));
+
+        var list = repository.findByUser_IdAndPatient_Id(current.getId(), patientId);
+        return list.stream().map(this::toResponseDTO).toList();
     }
 
     @Override
