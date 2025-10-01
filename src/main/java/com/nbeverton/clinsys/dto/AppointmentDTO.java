@@ -20,7 +20,6 @@ public class AppointmentDTO {
     @NotBlank(message = "O campo status é obrigatório")
     private String status;
 
-//    @NotNull(message = "O status de pagamento é obrigatório")
     private boolean paid;
 
     @NotNull(message = "O Id do paciente é obrigatório")

@@ -7,9 +7,11 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -25,8 +27,23 @@ public class AppointmentController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<AppointmentResponseDTO>> getAll(Pageable pageable) {
-        return ResponseEntity.ok(service.getAllAppointments(pageable));
+    public ResponseEntity<Page<AppointmentResponseDTO>> getAll(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+
+            @RequestParam(required = false) Boolean paid,
+
+            // aceita: status=AGENDADA ou status=AGENDADA,REALIZADA ou status=AGENDADA&status=REALIZADA
+            @RequestParam(required = false, name = "status") List<String> statuses,
+
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                service.searchAppointments(startDate, endDate, paid, statuses, pageable)
+        );
     }
 
     @GetMapping("/{id}")
