@@ -94,7 +94,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         return repository.findAll(spec, pageable).map(this::toResponseDTO);
     }
 
-    // ---- Specifications helpers ----
+    // ---- Specifications helpers ---- Mover para uma classe dedicada AppointmentEspecifications
     private Specification<Appointment> byUser(Long userId) {
         return (root, query, cb) -> cb.equal(root.get("user").get("id"), userId);
     }

@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public class AppointmentResponseDTO {
 
     private Long id;
-    private java.time.LocalDate date;
+    private LocalDate date;
     private String time;
     private String description;
     private String status;
